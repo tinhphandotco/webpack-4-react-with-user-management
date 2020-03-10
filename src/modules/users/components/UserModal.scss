@@ -60,4 +60,27 @@
       width: 100%;
     }
   }
+
+  .control {
+    margin-top: 30px;
+    text-align: right;
+
+    .btn {
+      border: none;
+      background: rgb(2, 149, 194);
+      color: white;
+      outline: none;
+      padding: 5px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    &-ok {
+      margin-right: 5px;
+    }
+
+    &-nok {
+      background: rgb(226, 94, 94) !important;
+    }
+  }
 }

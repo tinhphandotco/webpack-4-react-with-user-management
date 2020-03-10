@@ -1,5 +1,6 @@
 import React from "react";
 import UsersContext from "./UsersContext";
+import { v4 as uuid } from 'uuid';
 
 const initState = {
   byId: {},
@@ -35,6 +36,22 @@ function UserReducer(state, action) {
       }
     }
 
+    case 'ADD_NEW_USER': {
+      const user = {
+        ...action.payload,
+        id: uuid()
+      }
+
+      return {
+        ...state,
+        byId: {
+          ...state.byId,
+          [user.id]: user
+        },
+        allIds: state.allIds.concat([user.id])
+      }
+    }
+
     default: return state;
   }
 }
@@ -53,11 +70,20 @@ function UsersProvider(props) {
       type: 'CLOSE_MODAL'
     })
   }, [dispatch]);
+
+  const addNewUser = React.useCallback((user) => {
+    console.log('addNewUser')
+    dispatch({
+      type: 'ADD_NEW_USER',
+      payload: user
+    })
+  }, [dispatch]);
   
   const contextValue = React.useMemo(() => ({
     ...usersReducer,
     onAddRecord,
-    onCloseModal
+    onCloseModal,
+    addNewUser
   }), [usersReducer, onAddRecord]);
 
   return (

@@ -6,7 +6,7 @@ import UsersContext from "../context/UsersContext";
 import "./UsersTable.scss";
 
 function UsersTable(props) {
-  const { onAddRecord } = React.useContext(UsersContext);
+  const { byId, allIds, onAddRecord } = React.useContext(UsersContext);
 
   return (
     <div>
@@ -25,24 +25,17 @@ function UsersTable(props) {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Alfreds Futterkiste</td>
-              <td>Maria Anders</td>
-              <td>Germany</td>
-              <td>
-                <button>Edit</button>
-                <button>Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Alfreds Futterkiste</td>
-              <td>Maria Anders</td>
-              <td>Germany</td>
-              <td>
-                <button>Edit</button>
-                <button>Delete</button>
-              </td>
-            </tr>
+            {allIds.map(id => (
+              <tr key={id} >
+                <td>{byId[id].name}</td>
+                <td>{byId[id].email}</td>
+                <td>{byId[id].phone}</td>
+                <td>
+                  <button>Edit</button>
+                  <button>Delete</button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
