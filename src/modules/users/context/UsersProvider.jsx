@@ -2,7 +2,10 @@ import React from "react";
 import UsersContext from "./UsersContext";
 import { v4 as uuid } from "uuid";
 
-const initState = {
+import { cacheState, parseCachedState } from '../../../utils/cache';
+
+const reducerKey = "UsersProvider_Reducer";
+const initState = parseCachedState(reducerKey) || {
   byId: {},
   allIds: [],
   appState: {
@@ -148,6 +151,10 @@ function UsersProvider(props) {
     }),
     [usersReducer, onAddRecord]
   );
+
+  React.useEffect(() => {
+    cacheState(reducerKey)(usersReducer);
+  }, [usersReducer])
 
   return (
     <UsersContext.Provider value={contextValue}>
