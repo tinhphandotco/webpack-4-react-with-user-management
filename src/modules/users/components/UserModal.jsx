@@ -33,14 +33,20 @@ const tabs = [
 ];
 
 function UserModal() {
-  const formRef = React.createRef();
+  const formRef = React.useRef();
+  const viewedTabs = React.useRef(false);
   const [tab, setTab] = React.useState(0);
-  const { appState, addNewUser, onCloseModal } = React.useContext(UsersContext);
-  const [formValues, setFormValues] = React.useState({
-    name: "",
-    email: "",
-    phone: ""
-  });
+
+  const { appState, addNewUser, editUser, onCloseModal } = React.useContext(UsersContext);
+  const [formValues, setFormValues] = React.useState(
+    appState.modalType === "add"
+      ? {
+          name: "",
+          email: "",
+          phone: ""
+        }
+      : appState.userEditting
+  );
 
   const input = React.useMemo(() => tabs[tab].input, [tab]);
   const handleChangeTab = index => () => {
@@ -67,7 +73,13 @@ function UserModal() {
   const onSubmitForm = e => {
     e.preventDefault();
     if (formValues.name && formValues.email && formValues.phone) {
-      addNewUser(formValues);
+      if (appState.modalType === 'edit') {
+        editUser(formValues)
+      }
+      if (appState.modalType === 'add') {
+        addNewUser(formValues)
+      }
+
       onCancelModal();
     } else {
       if (!formValues.name) {
@@ -77,13 +89,23 @@ function UserModal() {
       } else if (!formValues.phone) {
         setTab(2);
       }
-
-      const form = formRef.current;
-      setTimeout(() => {
-        form.reportValidity();
-      }, 200);
+      viewedTabs.current = true;
     }
   };
+
+  React.useEffect(() => {
+    if (appState.modalType === 'edit' && appState.isOpenModal) {
+      setFormValues(appState.userEditting);
+    }
+  }, [appState.isOpenModal, appState.modalType, appState.userEditting]);
+
+  // validate tab has empty field
+  React.useEffect(() => {
+    if (viewedTabs.current) {
+      formRef.current.reportValidity();
+      viewedTabs.current = false;
+    }
+  }, [tab])
 
   return (
     <div className="user-modal">
@@ -115,9 +137,11 @@ function UserModal() {
             </div>
             <div className="control">
               <button type="submit" className="btn control-ok">
-                Save
+                {
+                  appState.modalType === 'edit' ? 'Save' : 'Add'
+                }
               </button>
-              <button onClick={onCancelModal} className="btn control-nok">
+              <button type="button" onClick={onCancelModal} className="btn control-nok">
                 Cancel
               </button>
             </div>

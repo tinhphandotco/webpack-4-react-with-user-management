@@ -6,7 +6,17 @@ import UsersContext from "../context/UsersContext";
 import "./UsersTable.scss";
 
 function UsersTable(props) {
-  const { byId, allIds, onAddRecord } = React.useContext(UsersContext);
+  const { byId, allIds, onAddRecord, onEditUser, deleteUser } = React.useContext(
+    UsersContext
+  );
+
+  const onClickEditUser = id => () => {
+    onEditUser(id);
+  };
+
+  const onClickDeleteUser = id => () => {
+    deleteUser(id);
+  };
 
   return (
     <div>
@@ -26,13 +36,13 @@ function UsersTable(props) {
           </thead>
           <tbody>
             {allIds.map(id => (
-              <tr key={id} >
+              <tr key={id}>
                 <td>{byId[id].name}</td>
                 <td>{byId[id].email}</td>
                 <td>{byId[id].phone}</td>
                 <td>
-                  <button>Edit</button>
-                  <button>Delete</button>
+                  <button onClick={onClickEditUser(id)}>Edit</button>
+                  <button onClick={onClickDeleteUser(id)}>Delete</button>
                 </td>
               </tr>
             ))}
