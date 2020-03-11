@@ -33,6 +33,7 @@ const tabs = [
 ];
 
 function UserModal() {
+  const formRef = React.createRef();
   const [tab, setTab] = React.useState(0);
   const { appState, addNewUser, onCloseModal } = React.useContext(UsersContext);
   const [formValues, setFormValues] = React.useState({
@@ -63,11 +64,26 @@ function UserModal() {
     });
   };
 
-  const onSubmitForm = (e) => {
+  const onSubmitForm = e => {
     e.preventDefault();
-    addNewUser(formValues);
-    onCancelModal();
-  }
+    if (formValues.name && formValues.email && formValues.phone) {
+      addNewUser(formValues);
+      onCancelModal();
+    } else {
+      if (!formValues.name) {
+        setTab(0);
+      } else if (!formValues.email) {
+        setTab(1);
+      } else if (!formValues.phone) {
+        setTab(2);
+      }
+
+      const form = formRef.current;
+      setTimeout(() => {
+        form.reportValidity();
+      }, 200);
+    }
+  };
 
   return (
     <div className="user-modal">
@@ -81,7 +97,7 @@ function UserModal() {
               &times;
             </span>
           </div>
-          <form onSubmit={onSubmitForm}>
+          <form ref={formRef} onSubmit={onSubmitForm}>
             <UserModalTab
               tabs={tabs}
               currentTab={tab}
@@ -98,7 +114,9 @@ function UserModal() {
               />
             </div>
             <div className="control">
-              <button type="submit" className="btn control-ok">Save</button>
+              <button type="submit" className="btn control-ok">
+                Save
+              </button>
               <button onClick={onCancelModal} className="btn control-nok">
                 Cancel
               </button>
